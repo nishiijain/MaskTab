@@ -11,3 +11,15 @@ CREATE TABLE IF NOT EXISTS preprocessing_configs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_dataset_hash ON preprocessing_configs(dataset_hash);
+
+CREATE TABLE IF NOT EXISTS encoder_versions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    artifact_path TEXT NOT NULL,
+    pretraining_dataset_hash TEXT NOT NULL,
+    n_samples INTEGER NOT NULL,
+    n_epochs INTEGER NOT NULL,
+    val_reconstruction_loss REAL NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_encoder_versions_hash ON encoder_versions(pretraining_dataset_hash);

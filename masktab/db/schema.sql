@@ -23,3 +23,30 @@ CREATE TABLE IF NOT EXISTS encoder_versions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_encoder_versions_hash ON encoder_versions(pretraining_dataset_hash);
+
+CREATE TABLE IF NOT EXISTS task_head_versions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    encoder_version_id INTEGER NOT NULL,
+    task_name TEXT NOT NULL,
+    artifact_path TEXT NOT NULL,
+    labeled_dataset_hash TEXT NOT NULL,
+    n_samples INTEGER NOT NULL,
+    val_metric_name TEXT NOT NULL,
+    val_metric_value REAL NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_active INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (encoder_version_id) REFERENCES encoder_versions(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_head_active ON task_head_versions(task_name, is_active);
+
+CREATE TABLE IF NOT EXISTS benchmark_results (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    encoder_version_id INTEGER,
+    arm_name TEXT NOT NULL,
+    val_metric_name TEXT NOT NULL,
+    val_metric_value REAL NOT NULL,
+    n_training_samples INTEGER NOT NULL,
+    labeled_dataset_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

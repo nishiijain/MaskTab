@@ -50,3 +50,24 @@ CREATE TABLE IF NOT EXISTS benchmark_results (
     labeled_dataset_hash TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS drift_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_name TEXT NOT NULL,
+    inference_batch_id TEXT NOT NULL,
+    feature_name TEXT NOT NULL,
+    psi_score REAL NOT NULL,
+    drift_flag INTEGER NOT NULL,
+    logged_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_drift_log_task_logged ON drift_log(task_name, logged_at DESC);
+
+CREATE TABLE IF NOT EXISTS fine_tuning_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_name TEXT NOT NULL,
+    trigger_reason TEXT NOT NULL,
+    previous_head_version_id INTEGER,
+    new_head_version_id INTEGER,
+    triggered_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

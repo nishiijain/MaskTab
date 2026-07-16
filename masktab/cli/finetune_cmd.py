@@ -3,9 +3,9 @@ import sys
 from masktab.training.finetune import finetune_head
 
 @click.command()
+@click.pass_context
 @click.option('--encoder-version-id', type=int, required=True, help='ID of the pretrained encoder version')
 @click.option('--csv', 'csv_path', required=True, type=click.Path(exists=True), help='Path to the input CSV file')
-@click.option('--db', 'db_path', required=True, type=click.Path(), help='Path to the SQLite database')
 @click.option('--target-column', required=True, type=str, help='Name of the target column')
 @click.option('--task-type', required=True, type=click.Choice(['classification', 'regression']), help='Type of task')
 @click.option('--task-name', required=True, type=str, help='Name of the fine-tuning task')
@@ -18,8 +18,9 @@ from masktab.training.finetune import finetune_head
 @click.option('--artifact-dir', type=click.Path(), default="artifacts/heads", help='Directory to save artifacts')
 @click.option('--seed', 'random_seed', type=int, default=42, help='Random seed')
 @click.option('--patience', 'early_stopping_patience', type=int, default=10, help='Early stopping patience')
-def finetune(encoder_version_id, csv_path, db_path, target_column, task_type, task_name, feature_columns, n_classes, epochs, batch_size, learning_rate, val_split, artifact_dir, random_seed, early_stopping_patience):
+def finetune(ctx, encoder_version_id, csv_path, target_column, task_type, task_name, feature_columns, n_classes, epochs, batch_size, learning_rate, val_split, artifact_dir, random_seed, early_stopping_patience):
     """Fine-tune a task head on top of a frozen pretrained encoder."""
+    db_path = ctx.obj.get('db_path')
     if feature_columns:
         feature_columns = [c.strip() for c in feature_columns.split(",")]
         

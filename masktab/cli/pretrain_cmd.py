@@ -3,8 +3,8 @@ import sys
 from masktab.training.pretrain import pretrain_encoder
 
 @click.command()
+@click.pass_context
 @click.option('--csv', 'csv_path', required=True, type=click.Path(exists=True), help='Path to the input CSV file')
-@click.option('--db', 'db_path', required=True, type=click.Path(), help='Path to the SQLite database')
 @click.option('--epochs', type=int, default=50, help='Number of training epochs')
 @click.option('--batch-size', type=int, default=64, help='Training batch size')
 @click.option('--lr', 'learning_rate', type=float, default=1e-3, help='Learning rate')
@@ -14,8 +14,9 @@ from masktab.training.pretrain import pretrain_encoder
 @click.option('--artifact-dir', type=click.Path(), default="artifacts/encoders", help='Directory to save artifacts')
 @click.option('--seed', 'random_seed', type=int, default=42, help='Random seed for reproducibility')
 @click.option('--patience', 'early_stopping_patience', type=int, default=8, help='Early stopping patience')
-def pretrain(csv_path, db_path, epochs, batch_size, learning_rate, mask_prob, alpha, val_split, artifact_dir, random_seed, early_stopping_patience):
+def pretrain(ctx, csv_path, epochs, batch_size, learning_rate, mask_prob, alpha, val_split, artifact_dir, random_seed, early_stopping_patience):
     """Pretrain the Masked Autoencoder."""
+    db_path = ctx.obj.get('db_path')
     try:
         result = pretrain_encoder(
             csv_path=csv_path,

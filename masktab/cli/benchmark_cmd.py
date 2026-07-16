@@ -3,9 +3,9 @@ import sys
 from masktab.training.benchmark import run_benchmark
 
 @click.command()
+@click.pass_context
 @click.option('--encoder-version-id', type=int, required=True, help='ID of the pretrained encoder version')
 @click.option('--csv', 'csv_path', required=True, type=click.Path(exists=True), help='Path to the input CSV file')
-@click.option('--db', 'db_path', required=True, type=click.Path(), help='Path to the SQLite database')
 @click.option('--target-column', required=True, type=str, help='Name of the target column')
 @click.option('--task-type', required=True, type=click.Choice(['classification', 'regression']), help='Type of task')
 @click.option('--labeled-fraction-partial', type=float, default=0.2, help='Fraction of data for partial supervised training')
@@ -14,8 +14,9 @@ from masktab.training.benchmark import run_benchmark
 @click.option('--epochs', type=int, default=100, help='Number of training epochs')
 @click.option('--batch-size', type=int, default=32, help='Training batch size')
 @click.option('--seed', 'random_seed', type=int, default=42, help='Random seed')
-def benchmark(encoder_version_id, csv_path, db_path, target_column, task_type, labeled_fraction_partial, feature_columns, n_classes, epochs, batch_size, random_seed):
+def benchmark(ctx, encoder_version_id, csv_path, target_column, task_type, labeled_fraction_partial, feature_columns, n_classes, epochs, batch_size, random_seed):
     """Run a benchmark evaluating multiple configurations."""
+    db_path = ctx.obj.get('db_path')
     if feature_columns:
         feature_columns = [c.strip() for c in feature_columns.split(",")]
         

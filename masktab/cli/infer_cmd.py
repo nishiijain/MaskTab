@@ -9,14 +9,15 @@ from masktab.data.loader import load_csv
 logger = logging.getLogger(__name__)
 
 @click.command()
+@click.pass_context
 @click.option("--input-csv", required=True, type=click.Path(exists=True), help="Path to input CSV for inference.")
 @click.option("--task-name", required=True, type=str, help="Name of the task to run inference for.")
-@click.option("--db", required=True, type=click.Path(), help="Path to SQLite database.")
 @click.option("--confidence-threshold", type=float, default=0.60, help="Threshold below which classification predictions are marked UNCERTAIN.")
 @click.option("--disable-drift-check", is_flag=True, help="Disable PSI drift checking.")
 @click.option("--output-json", type=click.Path(), default="inference_output.json", help="Path to write the detailed JSON output.")
-def infer(input_csv, task_name, db, confidence_threshold, disable_drift_check, output_json):
+def infer(ctx, input_csv, task_name, confidence_threshold, disable_drift_check, output_json):
     """Run inference for a specific task on a CSV dataset."""
+    db = ctx.obj.get('db_path')
     try:
         # Load CSV using Phase 1 loader to ensure consistent parsing, but predict takes DataFrame
         df, _ = load_csv(input_csv)
